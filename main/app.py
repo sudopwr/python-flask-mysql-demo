@@ -1,7 +1,9 @@
 """Flask App main module"""
 from flask import Flask, request
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, origins=["http://127.0.0.1:5501"])
 
 @app.route('/products', methods = ["get"])
 def get_products():
