@@ -1,9 +1,9 @@
 """Flask App main module"""
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, origins=["http://127.0.0.1:5501"])
+CORS(app, origins=["http://127.0.0.1:5500"])
 
 @app.route('/products', methods = ["get"])
 def get_products():
@@ -26,3 +26,8 @@ def update_products():
 @app.route('/products/<id>', methods = ["delete"])
 def delete_products(id):
     return { "message": "delete api called " + id }
+
+@app.route('/say-hello/<name>', methods = ["get"])
+def say_hello(name):
+    msg = 'hello ' + name
+    return render_template("say_hello.html", msg = msg)
