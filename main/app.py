@@ -2,9 +2,18 @@
 from flask import Flask, request, render_template
 from flask_cors import CORS
 from uuid import uuid4
+import os
+from main.config import config
+from main.utils import testing
 
 app = Flask(__name__)
-CORS(app, origins=["http://127.0.0.1:5500"])
+app_mode = os.getenv("APP_MODE")
+config_props = config.get(app_mode)
+app.config.from_object(config_props)
+
+CORS(app, origins=[app.config["DEBUG"]])
+print('App origins : %s' % app.config["APP_ORIGINS"])
+print('DEBUG : %s' % app.config["DEBUG"])
 
 blogs = [{
     "id": "12234",
@@ -54,4 +63,7 @@ def delete_blogs(id):
     blogs.extend(temp)
     return { "msg": "success" }, 200
 
+    
+with app.app_context():
+    testing()
     
