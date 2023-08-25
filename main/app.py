@@ -4,16 +4,11 @@ from flask_cors import CORS
 from uuid import uuid4
 import os
 from main.config import config
-from main.utils import testing
 
 app = Flask(__name__)
-app_mode = os.getenv("APP_MODE")
-config_props = config.get(app_mode)
-app.config.from_object(config_props)
+app.config.from_object(config.get(os.getenv("APP_MODE")))
 
-CORS(app, origins=[app.config["DEBUG"]])
-print('App origins : %s' % app.config["APP_ORIGINS"])
-print('DEBUG : %s' % app.config["DEBUG"])
+CORS(app, origins=[app.config["APP_ORIGINS"]])
 
 blogs = [{
     "id": "12234",
@@ -65,5 +60,5 @@ def delete_blogs(id):
 
     
 with app.app_context():
-    testing()
+    pass
     
