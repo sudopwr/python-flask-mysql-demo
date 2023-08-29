@@ -1,5 +1,7 @@
 from flask import Blueprint, request
 from uuid import uuid4
+from main.models.blog import Blog
+from main.db import db
 
 blog_blp = Blueprint("Blog", __name__)
 
@@ -26,14 +28,10 @@ def get_by_id_blogs(id):
 @blog_blp.route('/blogs', methods = ["post"])
 def add_blogs():
     request_data = request.get_json()
-    blog = {
-        "id": str(uuid4()),
-        "title": request_data["title"],
-        "content": request_data["content"]
-    }
-    print(blog)
-    blogs.append(blog)
-    return blog, 201
+    blog = Blog(title = request_data["title"], content =  request_data["content"])
+    db.session.add(blog)
+    db.session.commit()
+    return { "msg": "success" }, 201
 
 @blog_blp.route('/blogs/<id>', methods = ["put"])
 def update_blogs(id):
