@@ -1,29 +1,19 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from uuid import uuid4
 from main.models.blog import Blog
 from main.db import db
 
 blog_blp = Blueprint("Blog", __name__)
 
-
-blogs = [{
-    "id": "12234",
-    "title": "HTML Tutorial",
-    "content": "This is good tutorials"
-}, {
-    "id": "3445435trt45",
-    "title": "CSS Tutorial",
-    "content": "This is good CSS tutorials"
-}]
-
 @blog_blp.route('/blogs', methods = ["get"])
 def get_blogs():
-    return blogs
+    blogs = Blog.query.all()
+    return jsonify(blogs)
 
 @blog_blp.route('/blogs/<id>', methods = ["get"])
 def get_by_id_blogs(id):
-    temp = [blog for blog in blogs if blog["id"] == id][0]
-    return temp, 200
+    blog = Blog.query.get_or_404(id)
+    return jsonify(blog), 200
 
 @blog_blp.route('/blogs', methods = ["post"])
 def add_blogs():
@@ -36,18 +26,17 @@ def add_blogs():
 @blog_blp.route('/blogs/<id>', methods = ["put"])
 def update_blogs(id):
     request_data = request.get_json()
-    temp = [blog for blog in blogs if blog["id"] == id][0]
-    print(temp)
-    temp["title"] = request_data["title"]
-    temp["content"] = request_data["content"]
+    blog = Blog.query.get_or_404(id)
+    blog.title = request_data["title"]
+    blog.content = request_data["content"]
+    db.session.commit()
     return { "msg": "success" }, 200
 
 @blog_blp.route('/blogs/<id>', methods = ["delete"])
 def delete_blogs(id):
-    temp = [blog for blog in blogs if blog["id"] != id]
-    print(temp)
-    blogs.clear()
-    blogs.extend(temp)
+    blog = Blog.query.get_or_404(id)
+    db.session.delete(blog)
+    db.session.commit()
     return { "msg": "success" }, 200
 
 
