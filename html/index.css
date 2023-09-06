@@ -1,0 +1,26 @@
+body {
+    font-family: 'Abel', sans-serif;
+}
+
+.align-item-center {
+    align-items: center;
+}
+
+.text-red-800-color {
+    color: #58151c;
+}
+
+.border-red-800-color {
+    border-color: #58151c;
+}
+
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    top: 40%;
+    left: 0px;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
