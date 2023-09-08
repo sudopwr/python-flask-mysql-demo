@@ -132,6 +132,7 @@
 
                 reader.onload = function (e) {
                     const imageCode = e.target.result
+                    console.log(imageCode)
                     document.getElementById("demoImage").src = e.target.result
                     imageBase64Code = imageCode
                 };
