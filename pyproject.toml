@@ -16,6 +16,8 @@ pymysql = "^1.1.0"
 flask-sqlalchemy = "^3.0.5"
 cryptography = "^41.0.3"
 pyjwt = "^2.8.0"
+google-auth = "^2.23.0"
+requests = "^2.31.0"
 
 
 [build-system]

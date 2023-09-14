@@ -1,25 +1,49 @@
 from flask import Blueprint, request, jsonify, g
 import jwt
 from functools import wraps
+from google.oauth2 import id_token
+from google.auth.transport import requests
+from main.models import User
+from main.db import db
 
 login_blp = Blueprint("Login", __name__)
-
+CLIENT_ID = "535225394992-l300s5feiaivurrv5mklis53dfc8kckk.apps.googleusercontent.com"
 
 @login_blp.route('/login', methods=["post"])
 def login():
-    request_data = request.get_json()
-    username = request_data["username"]
+    try:
+        request_data = request.get_json()
+        google_id_token = request_data["token"]
+        idinfo = id_token.verify_oauth2_token(google_id_token, requests.Request(), CLIENT_ID)
 
-    payload = {
-        "uid": username
-    }
+        google_user_id = idinfo["sub"]
 
-    if username == "sudopower":
-        payload["role"] = "admin"
+        user = User.query.get(google_user_id)
 
-    token = jwt.encode(payload, "dsfdf5654tgfdg5546", algorithm = "HS256")
+        if user is None:
+            user = User(
+                id = google_user_id,
+                name = idinfo["name"],
+                email = idinfo["email"],
+                image = idinfo["picture"],
+            )
+            db.session.add(user)
+            db.session.commit()
 
-    return { "token": token }
+        payload = {
+            "uid": google_user_id
+        }
+
+        if idinfo["email"] == "sudopwr@gmail.com":
+            payload["role"] = "admin"
+        else:
+            payload["role"] = "user"
+
+        jwtToken = jwt.encode(payload, "dsfdf5654tgfdg5546", algorithm = "HS256")
+
+        return { "token": jwtToken }
+    except Exception as e:
+        return { "error": "Login Failed" }, 401
 
 def login_required(f):
     @wraps(f)
