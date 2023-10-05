@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from uuid import uuid4
 from main.models import Product
 from main.db import db
+from main.usecases.login import login_required, should_be_admin
 
 product_blp = Blueprint("Product", __name__)
 
@@ -19,6 +20,8 @@ def get_by_id_product(id):
 
 
 @product_blp.route('/products', methods=["post"])
+@login_required
+@should_be_admin
 def add_product():
     request_data = request.get_json()
     product = Product(
@@ -34,6 +37,8 @@ def add_product():
 
 
 @product_blp.route('/products/<id>', methods=["put"])
+@login_required
+@should_be_admin
 def update_product(id):
     request_data = request.get_json()
     product = Product.query.get_or_404(id)
@@ -49,6 +54,8 @@ def update_product(id):
 
 
 @product_blp.route('/products/<id>', methods=["delete"])
+@login_required
+@should_be_admin
 def delete_product(id):
     product = Product.query.get_or_404(id)
     db.session.delete(product)
